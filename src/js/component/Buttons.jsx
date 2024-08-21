@@ -17,7 +17,7 @@ function ResumeButton({ onResume }) {
     };
 
     return (
-        <button onClick={handleResume}>Resume/ Start</button>
+        <button onClick={handleResume}>Start/ Resume</button>
     );
 }
 

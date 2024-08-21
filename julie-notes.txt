@@ -1,0 +1,17 @@
+* last checked functionality: 8.20.2024
+
+
+-- FILES EDITED FOR PROJECT --
+* index.css (js > styles >)
+* index.js (js >)
+* Buttons.jsx (js > component >)
+* App.jsx or AppSimplified.jsx (js > component >)
+* SimpleCounter.jsx (js > component >)
+* time (js >) 
+
+
+-- OTHER NOTES --
+* AppSimplified.jsx exists for a version of the project where only the counter or the counter with the 3 buttons (start/ stop/ reset) exists
+(excludes the countdown timer and the toggle counting direction button)
+    - If AppSimplified.jsx is used, minimal styling from the index.css is needed
+* App.jsx includes a second counter using 6 digits, start/ resume, stop, reset, toggle counting direction, and a countdown time button

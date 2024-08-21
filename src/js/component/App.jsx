@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SimpleCounter from "./SimpleCounter.jsx";
-import { useState } from "react";
-import calculateSeconds from "../../lib/time.js";
+import calculateSeconds from "../time.js";
 import { StopButton, ResumeButton, ResetButton } from "./Buttons.jsx";
 
 
@@ -9,32 +8,33 @@ function App() {
     const [counter, setCounter] = useState(0);
     const [countingUp, setCountingUp] = useState(true);
     const [startNumber, setStartNumber] = useState(0);
-    const [isRunning, setIsRunning] = useState(true);
+    const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
         let interval;
         if (isRunning) {
             interval = setInterval(() => {
-                if (countingUp) {
-                    setCounter(prevCounter => prevCounter + 1);
-                } else {
-                    if (counter > 0) {
-                        setCounter(prevCounter => prevCounter - 1);
+                setCounter(prevCounter => {
+                    if (countingUp) {
+                        return prevCounter + 1;
+                    } else {
+                        if (prevCounter > 0) {
+                            return prevCounter - 1;
+                        } else {
+                            setIsRunning(false);
+                            alert("Time's up!");
+                            // Change direction to counting up
+                            setCountingUp(true);
+                            return 0;
+                        }
                     }
-                }
+                });
             }, 1000);
         }
 
-        if (counter === 0 && !countingUp && startNumber !== 0) {
-            alert("Time's up!");
-        }
-
         return () => clearInterval(interval);
-    }, [counter, countingUp, isRunning]);
+    }, [isRunning, countingUp]);
 
-    const toggleCountingDirection = () => {
-        setCountingUp(prevCountingUp => !prevCountingUp);
-    };
 
     const handleInputChange = (event) => {
         setStartNumber(Number(event.target.value)); 
@@ -46,17 +46,28 @@ function App() {
         setIsRunning(true);
     };
 
-    const handleStop = () => {
-        setIsRunning(false);
+    const toggleCountingDirection = () => {
+        if (!isRunning) {
+            setCountingUp(prev => !prev);
+            setIsRunning(true);
+        } else {
+            setCountingUp(prev => !prev);
+        }
     };
 
+    const handleStop = () => setIsRunning(false);
+
     const handleResume = () => {
+        if (!isRunning && counter === 0 && !countingUp) {
+            // If the counter is zero and not counting up, reset it to zero and start counting up
+            setCounter(0);
+            setCountingUp(true);
+        }
         setIsRunning(true);
     };
 
     const handleReset = () => {
         setCounter(0);
-        setCountingUp(true);
         setIsRunning(false);
     };
 
@@ -64,28 +75,30 @@ function App() {
     return (
         <>
             <SimpleCounter
-                hundredThousandsDigit = {calculateSeconds(counter, 100000)}
-                tenThousandsDigit = {calculateSeconds(counter, 10000)}
-                thousandsDigit = {calculateSeconds(counter, 1000)}
-                hundredsDigit = {calculateSeconds(counter, 100)}
-                tensDigit = {calculateSeconds(counter, 10)}
-                onesDigit = {calculateSeconds(counter, 1)}
+                hundredThousandsDigit={calculateSeconds(counter, 100000)}
+                tenThousandsDigit={calculateSeconds(counter, 10000)}
+                thousandsDigit={calculateSeconds(counter, 1000)}
+                hundredsDigit={calculateSeconds(counter, 100)}
+                tensDigit={calculateSeconds(counter, 10)}
+                onesDigit={calculateSeconds(counter, 1)}
             />
-            <div className="button-container">
-                <input type="number" value={startNumber} onChange={handleInputChange} />
-                <button onClick={startCountdown}>Start Countdown</button>
+            <div className="button-container d-flex justify-content-between">
+                <div className="countdown-timer-div">
+                    <input type="number" value={startNumber} onChange={handleInputChange} />
+                    <button onClick={startCountdown}>Start Countdown Timer</button>
+                </div>
+                <div className="center-buttons">
+                    <ResumeButton onResume={handleResume} />
+                    <StopButton onStop={handleStop} />
+                    <ResetButton onReset={handleReset} />
+                </div>    
                 <button onClick={toggleCountingDirection}>
                     {countingUp ? "Switch to Count Down" : "Switch to Count Up"}
                 </button>
             </div>
-            <div className="button-container">
-                <ResetButton onReset={handleReset} />
-                <StopButton onStop={handleStop} />
-                <ResumeButton onResume={handleResume} />
-            </div>
         </>
-    )
+    );
 }
 
 
-export default App
+export default App;
